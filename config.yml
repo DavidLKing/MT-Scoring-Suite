@@ -1,2 +1,3 @@
 # METEOR: your METEOR PATH here
-METEOR: ~/bin/meteor-1.5
+METEOR: /home/david/bin/meteor-1.5/meteor-1.5.jar
+BLEU n-gram: 4

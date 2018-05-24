@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
+# meteor - *.jar.. / git / MT - Scoring - Suite / gold.txt.. / git / MT - Scoring - Suite / pred.txt -l en
 
 import sys
 import argparse
 import pdb
 import pickle as pkl
+import nltk
+from nltk.translate.bleu_score import sentence_bleu
+from nltk.translate.bleu_score import corpus_bleu
 import yaml
+import subprocess
 
 parser = argparse.ArgumentParser()
-# requiredNamed = parser.add_argument_group('required named arguments')
+requiredNamed = parser.add_argument_group('required named arguments')
 requiredNamed.add_argument('-c', '--config', help='YaML config file', required=True)
 requiredNamed.add_argument('-r', '--ref', help='Reference file', required=True)
 requiredNamed.add_argument('-p', '--pred', help='Prediction file', required=True)
@@ -33,10 +38,53 @@ class Score:
         """
         return open(_file, 'r').readlines()
 
+    def bleu_weights(self, maxn):
+        weights = []
+        for n in range(maxn):
+            weights.append([0] * maxn)
+        for n in range(maxn):
+            weights[n][n] = 1
+        return [tuple(x) for x in weights]
+
+    def get_bleus(self, ref, pred, weights):
+        scores = []
+        for w in weights:
+            scores.append(sentence_bleu([ref], pred, w))
+        assert(len(scores) == len(weights))
+        return scores
+
+    def main(self, reffile, predfile, maxn):
+        refs = s.load_file(reffile)
+        preds = s.load_file(predfile)
+        assert(len(refs) == len(preds)), "Reference and prediciton files must be of the same length"
+        weight_tuples = self.bleu_weights(maxn)
+        print("Getting coprus level scores")
+        # Get everything
+        corp_scores = [corpus_bleu(refs, preds, weights=w) for w in weight_tuples]
+        # Meteor also has line by line results
+        cmd = [
+            "java",
+            "-jar",
+            config['METEOR'],
+            reffile,
+            predfile,
+            "-l",
+            "en"
+        ]
+        print("Starting meteor")
+        meteor = subprocess.run(cmd, stdout=subprocess.PIPE)
+        sent_scores = []
+        for ref, pred in zip(refs, preds):
+            scores = self.get_bleus(ref, pred, weight_tuples)
+            sent_scores.append(scores)
+        pdb.set_trace()
+
 
 
 
 if __name__ == '__main__':
     s = Score()
-    p.load_file(p.args.input)
-    p.main(p.args.output)
+    ref = s.args.ref
+    pred = s.args.pred
+    s.main(ref, pred, config['BLEU n-gram'])
+
