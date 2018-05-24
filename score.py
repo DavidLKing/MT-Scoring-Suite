@@ -107,6 +107,12 @@ class Score:
                 scores.append(met)
         return scores
 
+    def get_met_corp(self, meteor):
+        meteor = meteor.stdout.decode().split("\n")
+        # List comprehension isn't working
+        # test = [x.startswith("Segment") for x in meteor]
+        return meteor[-2].split(' ')[-1]
+
     def main(self, srcfile, reffile, predfile, maxn, out):
         self.prepTER(predfile, reffile)
         srcs = s.load_file(srcfile)
@@ -129,6 +135,7 @@ class Score:
         ]
         print("Starting METEOR")
         meteor = subprocess.run(cmd, stdout=subprocess.PIPE)
+        met_corp = self.get_met_corp(meteor)
         met_sent = self.get_met_sent(meteor)
         print("Starting TER")
         tercmd = [
@@ -159,9 +166,9 @@ class Score:
             "Machine",
             "TER",
             "METEOR",
-            "BLEU 1"
-            "BLEU 2"
-            "BLEU 3"
+            "BLEU 1",
+            "BLEU 2",
+            "BLEU 3",
             "BLEU 4"
         ]
         outfile = open(out, 'w')
@@ -180,6 +187,14 @@ class Score:
             outline += '\n'
             # pdb.set_trace()
             outfile.write(outline)
+        outfile.write("\nCorpus level scores\n")
+        outfile.write('\t'.join([
+            "TER", "METEOR", "BLEU 1",
+            "BLEU 2", "BLEU 3", "BLEU 4\n"
+        ]))
+        outgroup = [ter_corp, met_corp] + [str(x) for x in corp_scores]
+        outgroup = '\t'.join(outgroup)
+        outfile.write(outgroup)
 
 
 

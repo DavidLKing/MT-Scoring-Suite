@@ -1,5 +1,7 @@
 # METEOR: your METEOR PATH here
 METEOR: /home/david/bin/meteor-1.5/meteor-1.5.jar
+# METLANG: set your METEOR language here
 METLANG: en
+# TER: your TER PATH here
 TER: /home/david/bin/tercom-0.7.25/tercom.7.25.jar
 BLEU n-gram: 4
