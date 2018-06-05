@@ -187,14 +187,16 @@ class Score:
             outline += '\n'
             # pdb.set_trace()
             outfile.write(outline)
-        outfile.write("\nCorpus level scores\n")
-        outfile.write('\t'.join([
+        # outfile.write("\nCorpus level scores\n")
+        # outfile.write('\t'.join([
+        print("Corpus level scores")
+        print('\t'.join([
             "TER", "METEOR", "BLEU 1",
             "BLEU 2", "BLEU 3", "BLEU 4\n"
         ]))
         outgroup = [ter_corp, met_corp] + [str(x) for x in corp_scores]
         outgroup = '\t'.join(outgroup)
-        outfile.write(outgroup)
+        print(outgroup)
 
 
 
