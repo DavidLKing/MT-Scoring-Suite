@@ -175,28 +175,26 @@ class Score:
         outfile.write('\t'.join(header) + '\n')
         for src, ref, pred, ter, met, bleu in zip(srcs, refs, preds, ter_scores, met_sent, sent_scores):
             outline = [src, ref, pred, ter, met]
-            # pdb.set_trace()
             outline += bleu
-            # pdb.set_trace()
             outline = [str(x) for x in outline]
-            # pdb.set_trace()
             outline = [x.strip() for x in outline]
-            # pdb.set_trace()
             outline = '\t'.join(outline)
-            # pdb.set_trace()
             outline += '\n'
-            # pdb.set_trace()
             outfile.write(outline)
-        # outfile.write("\nCorpus level scores\n")
-        # outfile.write('\t'.join([
-        print("Corpus level scores")
-        print('\t'.join([
+        corpfile = open("corpus_level.tsv", 'w')
+        begin = "Corpus level scores"
+        print(begin)
+        corpfile.write(begin + '\n')
+        labels = [
             "TER", "METEOR", "BLEU 1",
-            "BLEU 2", "BLEU 3", "BLEU 4\n"
-        ]))
+            "BLEU 2", "BLEU 3", "BLEU 4"
+        ]
+        corpfile.write('\t'.join(labels) + '\n')
         outgroup = [ter_corp, met_corp] + [str(x) for x in corp_scores]
-        outgroup = '\t'.join(outgroup)
-        print(outgroup)
+        corpfile.write('\t'.join(outgroup) + '\n')
+        for lab, sco in zip(labels, outgroup):
+            print(lab, '\t', sco)
+
 
 
 
